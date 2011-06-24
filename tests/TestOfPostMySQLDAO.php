@@ -1873,7 +1873,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $builders = array();
         $builders[] = FixtureBuilder::build('posts', array(
         'id' => 5000,
-        'post_id'=> 13708601491193856,
+        'post_id'=> '13708601491193856',
         'author_user_id'=>100,
         'author_username'=>'user100',
         'retweet_count_cache'=>2,
@@ -1898,7 +1898,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
 
         $post = $pdao->getPost(12345, 'twitter');
         $this->assertEqual($post->in_retweet_of_post_id, null);
-        $post = $pdao->getPost(13708601491193856, 'twitter');
+        $post = $pdao->getPost('13708601491193856', 'twitter');
         $this->assertEqual($post->old_retweet_count_cache, 0);
 
         // now try adding that post again with the in_retweet_of_post_id field set.
@@ -1932,18 +1932,18 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $vals['geo'] = '';
         $vals['place'] = '';
         $vals['network'] = 'twitter';
-        $vals['in_retweet_of_post_id'] = 13708601491193856;
+        $vals['in_retweet_of_post_id'] = '13708601491193856';
         $vals['in_rt_of_user_id'] = 100;
 
         $pdao->addPost($vals);
         $post = $pdao->getPost(12345, 'twitter');
-        $this->assertEqual($post->in_retweet_of_post_id, 13708601491193856);
-        $post = $pdao->getPost(13708601491193856, 'twitter');
+        $this->assertEqual($post->in_retweet_of_post_id, '13708601491193856');
+        $post = $pdao->getPost('13708601491193856', 'twitter');
         $this->assertEqual($post->old_retweet_count_cache, 1);
         $this->assertEqual($post->retweet_count_cache, 2);
         // repeat, make sure no duplication now that the in_retweet_of_post_id IS set
         $pdao->addPost($vals);
-        $post = $pdao->getPost(13708601491193856, 'twitter');
+        $post = $pdao->getPost('13708601491193856', 'twitter');
         $this->assertEqual($post->old_retweet_count_cache, 1);
         $this->assertEqual($post->retweet_count_cache, 2);
     }
@@ -2121,45 +2121,45 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $dao = new PostMySQLDAO();
         $dao->addPostAndAssociatedInfo($post, $entities, $user_array);
 
-        $post_orig = $dao->getPost(39088587140108288, 'twitter');
+        $post_orig = $dao->getPost('39088587140108288', 'twitter');
         $this->assertEqual($post_orig->post_text,
         '@joanwalsh RT @AntDeRosa Hillary #Clinton provides perhaps the best argument defending Planned ' . 
         'Parenthood (Video, 2009) http://j.mp/eZbWh0');
-        $this->assertEqual($post_orig->post_id, 39088587140108288);
+        $this->assertEqual($post_orig->post_id, '39088587140108288');
         $this->assertEqual($post_orig->retweet_count_cache, 1);
         $this->assertEqual($post_orig->old_retweet_count_cache, 0);
         $this->assertEqual($post_orig->in_retweet_of_post_id, null);
 
-        $post_rt = $dao->getPost(39089424620978176, 'twitter');
-        $this->assertEqual($post_rt->post_id, 39089424620978176);
+        $post_rt = $dao->getPost('39089424620978176', 'twitter');
+        $this->assertEqual($post_rt->post_id, '39089424620978176');
         $this->assertEqual($post_rt->post_text, 'RT @HeyJacquiDey: @joanwalsh RT @AntDeRosa ' .
         'Hillary #Clinton provides perhaps the best argument defending Planned Parenthood (Video, 2009) ...');
         $this->assertEqual($post_rt->retweet_count_cache, 0);
         $this->assertEqual($post_rt->old_retweet_count_cache, 0);
-        $this->assertEqual($post_rt->in_retweet_of_post_id, 39088587140108288);
-        $this->assertEqual($post_rt->in_rt_of_user_id, 136881432);
+        $this->assertEqual($post_rt->in_retweet_of_post_id, '39088587140108288');
+        $this->assertEqual($post_rt->in_rt_of_user_id, '136881432');
         $h_dao = new HashTagMySQLDAO();
         $m_dao = new MentionMySQLDAO();
         $h = $h_dao->getHashtagInfoForTag('Clinton');
         $this->assertEqual($h['count_cache'], 2);
-        $hp = $h_dao->getHashtagsForPost(39088587140108288);
+        $hp = $h_dao->getHashtagsForPost('39088587140108288');
         $this->assertEqual(sizeof($hp), 1);
-        $this->assertEqual($hp[0]['post_id'], 39088587140108288);
-        $hp = $h_dao->getHashtagsForPost(39089424620978176);
-        $this->assertEqual($hp[0]['post_id'], 39089424620978176);
+        $this->assertEqual($hp[0]['post_id'], '39088587140108288');
+        $hp = $h_dao->getHashtagsForPost('39089424620978176');
+        $this->assertEqual($hp[0]['post_id'], '39089424620978176');
         $this->assertEqual($hp[0]['hashtag_id'], 1);
         $hph = $h_dao->getHashtagsForPostHID(1);
         $this->assertEqual(sizeof($hph), 2);
-        $this->assertEqual($hph[1]['post_id'], 39089424620978176);
+        $this->assertEqual($hph[1]['post_id'], '39089424620978176');
 
         $m = $m_dao->getMentionInfoUserName('joanwalsh');
         $this->assertEqual($m['count_cache'], 2);
-        $mp = $m_dao->getMentionsForPost(39089424620978176);
+        $mp = $m_dao->getMentionsForPost('39089424620978176');
         $this->assertEqual(sizeof($mp), 3);
         $this->assertEqual($mp[1]['mention_id'], 2);
         $mpm = $m_dao->getMentionsForPostMID(2);
         $this->assertEqual(sizeof($mpm), 2);
-        $this->assertEqual($mpm[0]['post_id'], 39088587140108288);
+        $this->assertEqual($mpm[0]['post_id'], '39088587140108288');
     }
 
     /**
@@ -2169,7 +2169,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         list($post, $entities, $user_array) = $this->buildStreamPostArray2();
         $dao = new PostMySQLDAO();
         $dao->addPostAndAssociatedInfo($post, $entities, $user_array);
-        $post = $dao->getPost(39451255650648064, 'twitter');
+        $post = $dao->getPost('39451255650648064', 'twitter');
         $this->assertEqual($post->place_id, '1a16a1d70500c27d');
         $p_dao = new PlaceMySQLDAO();
         $pinfo = $p_dao->getPlaceByID('1a16a1d70500c27d');
@@ -2182,9 +2182,9 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $this->assertPattern('/POINT\(-97.72446/', $pinfo['longlat']);
         $this->assertPattern('/ 30.3070565/', $pinfo['longlat']);
         $this->assertEqual($pinfo['place_id'], '1a16a1d70500c27d');
-        $ploc = $p_dao->getPostPlace(39451255650648064);
+        $ploc = $p_dao->getPostPlace('39451255650648064');
         $this->assertEqual($ploc['place_id'], '1a16a1d70500c27d');
-        $this->assertEqual($ploc['post_id'], 39451255650648064);
+        $this->assertEqual($ploc['post_id'], '39451255650648064');
         $this->assertEqual($ploc['longlat'], 'POINT(-97.723366 30.296095)');
     }
 
@@ -2197,7 +2197,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         unset($entities['place']['point_coords']);
         $dao = new PostMySQLDAO();
         $dao->addPostAndAssociatedInfo($post, $entities, $user_array);
-        $post = $dao->getPost(39451255650648064, 'twitter');
+        $post = $dao->getPost('39451255650648064', 'twitter');
         $this->assertEqual($post->place_id, '1a16a1d70500c27d');
         $p_dao = new PlaceMySQLDAO();
         $pinfo = $p_dao->getPlaceByID('1a16a1d70500c27d');
@@ -2210,7 +2210,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $this->assertPattern('/POINT\(-97.72446/', $pinfo['longlat']);
         $this->assertPattern('/ 30.3070565/', $pinfo['longlat']);
         $this->assertEqual($pinfo['place_id'], '1a16a1d70500c27d');
-        $ploc = $p_dao->getPostPlace(39451255650648064);
+        $ploc = $p_dao->getPostPlace('39451255650648064');
         $this->assertEqual($ploc, null);
     }
 
@@ -2222,13 +2222,13 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $dao = new PostMySQLDAO();
         $user_dao = new UserMySQLDAO();
         $dao->addPostAndAssociatedInfo($post, $entities, $user_array);
-        $post = $dao->getPost(39088041628934144, 'twitter');
+        $post = $dao->getPost('39088041628934144', 'twitter');
         $this->assertEqual($post->in_rt_of_user_id, 40025121);
         $user = $user_dao->getDetails(140955302, 'twitter');
         $this->assertEqual($user->username, 'DAaronovitch');
         $m_dao = new MentionMySQLDAO();
         $mention = $m_dao->getMentionInfoUserID(40025121);
-        $mp = $m_dao->getMentionsForPost(39088041628934144);
+        $mp = $m_dao->getMentionsForPost('39088041628934144');
         $this->assertTrue($mention != null);
         $this->assertEqual($mention['user_name'], 'RSAMatthew');
         $this->assertEqual($mention['count_cache'], 1);
@@ -2246,7 +2246,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
     private function buildStreamPostArray1() {
         $post = array (
             'in_rt_of_user_id' => 136881432,
-            'post_id' => 39089424620978176,
+            'post_id' => '39089424620978176',
             'author_user_id' => 1106501,
             'author_username' => 'joanwalsh',
             'author_fullname' => 'Joan Walsh',
@@ -2274,7 +2274,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
                'content' => array (
                     'is_rt' => false,
                     'in_rt_of_user_id' => '',
-                    'post_id' => 39088587140108288,
+                    'post_id' => '39088587140108288',
                     'author_user_id' => 136881432,
                     'author_username' => 'HeyJacquiDey',
                     'author_fullname' => 'Jacqueline Frances',
@@ -2333,20 +2333,20 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
                       'last_post' => '2011-02-19 22:27:00'
                       )
                       ),
-            'in_retweet_of_post_id' => 39088587140108288
-                      );
-                      $entities = array (
+            'in_retweet_of_post_id' => '39088587140108288'
+            );
+            $entities = array (
             'urls' => array ( ),
             'mentions' => array (
-                      0 => array (
+            0 => array (
                     'user_id' => 136881432,
                     'user_name' => 'HeyJacquiDey',
-                      ),
-                      1 => array (
+            ),
+            1 => array (
                     'user_id' => 1106501,
                     'user_name' => 'joanwalsh',
-                      ),
-                      2 => array(
+            ),
+            2 => array(
                     'user_id' => 1140451,
                     'user_name' => 'AntDeRosa'
                     )
@@ -2380,7 +2380,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $post = array(
             'is_rt' => false,
             'in_rt_of_user_id' => '',
-            'post_id' => 39451255650648064,
+            'post_id' => '39451255650648064',
             'author_user_id' => 201709909,
             'author_username' => 'bob',
             'author_fullname' => 'bob dole',
@@ -2468,7 +2468,7 @@ class TestOfPostMySQLDAO extends ThinkUpUnitTestCase {
         $post = array (
             'is_rt' => 1,
             'in_rt_of_user_id' => 40025121,
-            'post_id' => 39088041628934144,
+            'post_id' => '39088041628934144',
             'author_user_id' => 140955302,
             'author_username' => 'DAaronovitch',
             'author_fullname' => 'David Aaronovitch',
